@@ -1,15 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" <link
+        rel="stylesheet" href="assets/css/style.css">
     <title>Currency converter</title>
 </head>
-<body>
-    
 
+<body>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="text-muted"><span>1</span> Chilean Peso equals to:</p>
+                <p class="fs-2">1000 <span>Euro</span></p>
+                <p class="fs-6 text-muted" id="currentDate"></p>
+                <div class="mb-3">
+                    <label for="txtChileanCLP" class="form-label">Chilean Peso</label>
+                    <input type="number" class="form-control" id="txtChileanCLP">
+                    <p class="fs-3 text-center">To</p>
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="dolcar">Dolar</option>
+                        <option value="euro">Euro</option>
+                        <option value="uf">UF</option>
+                        <option value="bitcoin">Bitcoin</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <canvas id="currencyChart"></canvas>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.2/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js" defer></script>
 </body>
+
 </html>
