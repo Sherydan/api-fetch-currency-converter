@@ -5,6 +5,25 @@ let txtConvertedValue = document.querySelector("#txtConvertedValue");
 let txtCurrentCurrency = document.querySelector("#txtCurrentCurrency");
 let btnConvert = document.querySelector("#btnConvert");
 let txtCurrentValue = document.querySelector("#txtCurrentValue");
+let txtEqualsTo = document.querySelector("#txtEqualsTo");
+
+
+// capitalize first letter of each word
+// copy and paste from https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-each-word-capitalize-in-a-string
+Object.defineProperty(String.prototype, "capitalize", {
+  value: function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  },
+  enumerable: false,
+});
+
+/**
+ * Calls mindicador.cl API to get the current value of the selected currency
+ *
+ * @param {integer} valueToConvert
+ * @param {string} currencyId
+ * @returns
+ */
 
 const convertCurrency = async (valueToConvert, currencyId = "dolar") => {
   try {
@@ -14,7 +33,7 @@ const convertCurrency = async (valueToConvert, currencyId = "dolar") => {
     if (response.status !== 200) {
       throw new Error(response.statusText);
     } else {
-      let convertedValue = (1 / mindicador.serie[0].valor) * valueToConvert;
+      let convertedValue = valueToConvert / mindicador.serie[0].valor;
       return convertedValue.toFixed(5);
     }
   } catch (error) {
@@ -30,14 +49,16 @@ btnConvert.addEventListener("click", async () => {
   );
 });
 
-// change txtCurrentCurrency when dropdownCurrencyes is changed
+// when changed currency, show converted value and fill chart with new data
 dropdownCurrencyes.addEventListener("change", async () => {
-  txtCurrentCurrency.innerHTML = dropdownCurrencyes.value;
   txtConvertedValue.innerHTML = await convertCurrency(
     txtChileanCLP.value,
     dropdownCurrencyes.value
   );
   fillChart(dropdownCurrencyes.value);
+
+  // change texts when currency is changed
+  changeTexts();
 });
 
 // convert currency when txtChileanCLP is changed
@@ -46,17 +67,28 @@ txtChileanCLP.addEventListener("change", async () => {
     txtChileanCLP.value,
     dropdownCurrencyes.value
   );
+
+  // change texts when currency is changed
+  changeTexts();
 });
 
-// change txtCurrentValue when txtChileanCLP is changed
-txtChileanCLP.addEventListener("change", () => {
+// change texts when currency is changed
+function changeTexts() {
+  if (txtChileanCLP.value === "" || txtChileanCLP.value === " ") {
+    txtCurrentCurrency.innerHTML = dropdownCurrencyes.value.capitalize();
+    return;
+  }
   let value = parseInt(txtChileanCLP.value);
-  txtCurrentValue.innerHTML = value.toLocaleString("es-CL", {
-    style: "currency",
-    currency: "CLP",
-  });
-});
+  txtEqualsTo.innerHTML =
+    value.toLocaleString("es-CL", {
+      style: "currency",
+      currency: "CLP",
+    }) + " Chilean peso equals to";
 
+  txtCurrentCurrency.innerHTML = dropdownCurrencyes.value.capitalize();
+}
+
+// gets last 10 values from mindicador.cl API, then calls createChart() function to create a chart
 const fillChart = async (selectedCurrency = "dolar") => {
   try {
     response = await fetch(`https://mindicador.cl/api/${selectedCurrency}`);
@@ -80,7 +112,7 @@ const fillChart = async (selectedCurrency = "dolar") => {
           value: values[i],
         });
       }
-      console.log(data);
+
       createChart(data);
     }
   } catch (error) {
@@ -88,20 +120,23 @@ const fillChart = async (selectedCurrency = "dolar") => {
   }
 };
 
+
+// create a chart with the data received from mindicador.cl API
 function createChart(chartData) {
-  console.log(chartData);
+  // needs to invert chart data to view it from old to new
   // invert chartData
   chartData.reverse();
 
+  // map labels from chartData date
   const labels = chartData.map((item) => item.date);
-
   const data = {
     labels: labels,
     datasets: [
       {
-        label: "My First dataset",
+        label: "Ultimos 10 dias",
         backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 99, 132)",
+        // map data from chartData value
         data: chartData.map((item) => item.value),
       },
     ],
@@ -113,6 +148,7 @@ function createChart(chartData) {
     options: {},
   };
 
+  // canvas needs to be destroyed before changed to another currency
   // destroy canvas if it exists
   if (document.getElementById("currencyChart")) {
     document.getElementById("currencyChart").remove();
@@ -128,5 +164,7 @@ function createChart(chartData) {
 
 document.addEventListener("DOMContentLoaded", function () {
   txtCurrentDate.innerHTML = moment().format("dddd, MMMM, D");
+  txtEqualsTo.innerHTML = txtChileanCLP.value + " Chilean peso equals to:";
+  txtCurrentCurrency.innerHTML = dropdownCurrencyes.value.capitalize();
   fillChart();
 });
