@@ -88,7 +88,7 @@ function changeTexts() {
   txtCurrentCurrency.innerHTML = dropdownCurrencyes.value.capitalize();
 }
 
-// gets last 10 values from mindicador.cl API, then calls createChart() function to create a chart
+// gets firsts 10 values from mindicador.cl API, then calls createChart() function to create a chart
 const fillChart = async (selectedCurrency = "dolar") => {
   try {
     response = await fetch(`https://mindicador.cl/api/${selectedCurrency}`);
@@ -133,7 +133,7 @@ function createChart(chartData) {
     labels: labels,
     datasets: [
       {
-        label: "Ultimos 10 dias",
+        label: "Last 10 days",
         backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 99, 132)",
         // map data from chartData value
